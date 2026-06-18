@@ -326,12 +326,8 @@ export default function Home() {
         <div className="section-heading row-heading">
           <div>
             <span>Digital HR Portfolio</span>
-            <h2>Project visualization</h2>
+            <h2>Selected Digital HR Projects</h2>
           </div>
-          <p>
-            Project dibuat lebih visual agar recruiter langsung paham bentuk sistem,
-            workflow, dan value yang dibangun.
-          </p>
         </div>
 
         <div className="project-dashboard">
@@ -391,12 +387,8 @@ export default function Home() {
         <div className="section-heading row-heading">
           <div>
             <span>Experience</span>
-            <h2>Work experience</h2>
+            <h2>Professional Experience</h2>
           </div>
-          <p>
-            Dibuat lebih ringkas supaya recruiter bisa scan pengalaman utama tanpa
-            harus scroll terlalu panjang.
-          </p>
         </div>
 
         <div className="experience-grid">
@@ -428,11 +420,8 @@ export default function Home() {
         <div className="section-heading row-heading">
           <div>
             <span>Selected Achievements</span>
-            <h2>Key contributions</h2>
+            <h2>Key Contributions</h2>
           </div>
-          <p>
-            Achievement dibuat padat agar value project ownership lebih cepat kebaca.
-          </p>
         </div>
 
         <div className="achievement-list">
@@ -470,7 +459,7 @@ export default function Home() {
       <section className="section training-compact">
         <div className="section-heading">
           <span>Training & Certification</span>
-          <h2>Learning record</h2>
+          <h2>Learning Record</h2>
         </div>
 
         <div className="training-list">
