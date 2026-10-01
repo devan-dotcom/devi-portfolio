@@ -2,87 +2,146 @@
   const qs = (s, r = document) => r.querySelector(s);
   const qsa = (s, r = document) => [...r.querySelectorAll(s)];
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const header = qs('#siteHeader');
-  const progress = qs('#scrollProgress');
-  const menuButton = qs('#menuButton');
-  const mobileNav = qs('#mobileNav');
-  const sections = qsa('.snap-section');
-  const sectionCurrent = qs('#sectionCurrent');
-  const sectionProgress = qs('#sectionProgress');
 
-  const updateScroll = () => {
-    const y = scrollY;
-    const max = document.documentElement.scrollHeight - innerHeight;
-    progress.style.width = `${max > 0 ? (y / max) * 100 : 0}%`;
-    header.classList.toggle('scrolled', y > 24);
-    const marker = y + innerHeight * .45;
-    let activeIndex = 0;
-    sections.forEach((section, i) => { if (section.offsetTop <= marker) activeIndex = i; });
-    if (sectionCurrent) sectionCurrent.textContent = String(activeIndex + 1).padStart(2, '0');
-    if (sectionProgress) sectionProgress.style.height = `${((activeIndex + 1) / sections.length) * 100}%`;
-    qsa('.desktop-nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${sections[activeIndex]?.id}`));
-  };
-  addEventListener('scroll', updateScroll, { passive: true }); updateScroll();
+  const track = qs('#slides');
+  const slides = qsa('.slide');
+  const railLinks = qsa('[data-go]');
+  const prev = qs('#prevSlide');
+  const next = qs('#nextSlide');
+  const currentEl = qs('#slideCurrent');
+  const totalEl = qs('#slideTotal');
+  const pagerLabel = qs('#pagerLabel');
+  const pagerBar = qs('#pagerProgress i');
+  const lightbox = qs('#lightbox');
+  let current = 0;
+  let locked = false;
+  let wheelScore = 0;
+  let wheelReset;
+  let touchX = 0;
+  let touchY = 0;
+  let touchTime = 0;
 
-  menuButton?.addEventListener('click', () => {
-    const open = !mobileNav.classList.contains('open');
-    mobileNav.classList.toggle('open', open); menuButton.classList.toggle('open', open);
-    menuButton.setAttribute('aria-expanded', String(open)); document.body.classList.toggle('menu-open', open);
-  });
-  qsa('#mobileNav a').forEach(a => a.addEventListener('click', () => {
-    mobileNav.classList.remove('open'); menuButton.classList.remove('open'); menuButton.setAttribute('aria-expanded', 'false'); document.body.classList.remove('menu-open');
-  }));
+  const byId = id => slides.findIndex(s => s.id === id);
+  const format = n => String(n).padStart(2, '0');
 
-  const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } });
-  }, { threshold: .12, rootMargin: '0px 0px -4% 0px' });
-  qsa('.reveal').forEach(el => revealObserver.observe(el));
+  function setActive(index, updateHash = true) {
+    const nextIndex = Math.max(0, Math.min(slides.length - 1, index));
+    if (nextIndex === current && slides[current]?.classList.contains('active')) return;
+    current = nextIndex;
+    track.style.transform = `translate3d(-${current * 100}%,0,0)`;
 
-  const counterObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target, target = Number(el.dataset.count || 0), suffix = el.dataset.suffix || '';
-      if (reduceMotion) el.textContent = `${target}${suffix}`;
-      else {
-        const start = performance.now(), duration = 1000;
-        const tick = now => { const t = Math.min(1, (now - start) / duration), ease = 1 - Math.pow(1 - t, 3); el.textContent = `${Math.round(target * ease)}${suffix}`; if (t < 1) requestAnimationFrame(tick); };
-        requestAnimationFrame(tick);
-      }
-      counterObserver.unobserve(el);
+    slides.forEach((slide, i) => {
+      const active = i === current;
+      slide.classList.toggle('active', active);
+      slide.setAttribute('aria-hidden', active ? 'false' : 'true');
     });
-  }, { threshold: .75 });
-  qsa('[data-count]').forEach(el => counterObserver.observe(el));
 
-  if (matchMedia('(pointer:fine)').matches && !reduceMotion) {
-    qsa('.tilt-card').forEach(card => {
-      card.addEventListener('pointermove', e => { const r = card.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5; const y = (e.clientY - r.top) / r.height - .5; card.style.transform = `perspective(900px) rotateX(${y * -3}deg) rotateY(${x * 4}deg) translateY(-2px)`; });
-      card.addEventListener('pointerleave', () => card.style.transform = '');
+    const activeSlide = slides[current];
+    railLinks.forEach(link => {
+      const target = byId(link.dataset.go);
+      let navActive = target === current;
+      if (link.dataset.go === 'harmony' && current === byId('projects')) navActive = true;
+      if (link.dataset.go === 'education' && current === byId('certifications')) navActive = true;
+      link.classList.toggle('active', navActive);
     });
-    const portrait = qs('#portraitShell');
-    portrait?.addEventListener('pointermove', e => { const r = portrait.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5; const y = (e.clientY - r.top) / r.height - .5; portrait.style.transform = `perspective(1200px) rotateX(${y * -2.2}deg) rotateY(${x * 3}deg)`; });
-    portrait?.addEventListener('pointerleave', () => portrait.style.transform = '');
-    qsa('.magnetic').forEach(el => {
-      el.addEventListener('pointermove', e => { const r = el.getBoundingClientRect(); const x = e.clientX - (r.left + r.width / 2); const y = e.clientY - (r.top + r.height / 2); el.style.transform = `translate(${x * .06}px,${y * .08}px) translateY(-2px)`; });
-      el.addEventListener('pointerleave', () => el.style.transform = '');
-    });
+
+    if (currentEl) currentEl.textContent = format(current + 1);
+    if (totalEl) totalEl.textContent = format(slides.length);
+    if (pagerLabel) pagerLabel.textContent = activeSlide?.dataset.label || '';
+    if (pagerBar) pagerBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+    if (prev) prev.disabled = current === 0;
+    if (next) next.disabled = current === slides.length - 1;
+
+    if (updateHash && activeSlide?.id) history.replaceState(null, '', `#${activeSlide.id}`);
   }
 
-  // HARMONY interactive demo — deliberately uses demo data, never real employee data.
-  const demoNav = qsa('[data-demo-tab]'), demoPanels = qsa('[data-demo-panel]');
+  function move(step) {
+    if (locked || lightbox?.classList.contains('open')) return;
+    const target = current + step;
+    if (target < 0 || target >= slides.length) return;
+    locked = true;
+    setActive(target);
+    setTimeout(() => locked = false, reduceMotion ? 50 : 620);
+  }
+
+  railLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      const target = byId(link.dataset.go);
+      if (target < 0) return;
+      e.preventDefault();
+      setActive(target);
+    });
+  });
+  prev?.addEventListener('click', () => move(-1));
+  next?.addEventListener('click', () => move(1));
+
+  addEventListener('wheel', e => {
+    if (lightbox?.classList.contains('open')) return;
+    e.preventDefault();
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    wheelScore += delta;
+    clearTimeout(wheelReset);
+    wheelReset = setTimeout(() => wheelScore = 0, 160);
+    if (Math.abs(wheelScore) >= 55 && !locked) {
+      move(wheelScore > 0 ? 1 : -1);
+      wheelScore = 0;
+    }
+  }, { passive: false });
+
+  addEventListener('touchstart', e => {
+    if (lightbox?.classList.contains('open')) return;
+    const t = e.changedTouches[0];
+    touchX = t.clientX;
+    touchY = t.clientY;
+    touchTime = Date.now();
+  }, { passive: true });
+
+  addEventListener('touchend', e => {
+    if (lightbox?.classList.contains('open')) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchX;
+    const dy = t.clientY - touchY;
+    const elapsed = Date.now() - touchTime;
+    if (elapsed > 1100) return;
+    const horizontal = Math.abs(dx) >= Math.abs(dy);
+    const distance = horizontal ? dx : dy;
+    if (Math.abs(distance) < 52) return;
+    move(distance < 0 ? 1 : -1);
+  }, { passive: true });
+
+  addEventListener('keydown', e => {
+    if (lightbox?.classList.contains('open')) return;
+    if (['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)) { e.preventDefault(); move(1); }
+    if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) { e.preventDefault(); move(-1); }
+    if (e.key === 'Home') { e.preventDefault(); setActive(0); }
+    if (e.key === 'End') { e.preventDefault(); setActive(slides.length - 1); }
+  });
+
+  // HARMONY interactive demo: simulation only, never real employee data.
+  const demoNav = qsa('[data-demo-tab]');
+  const demoPanels = qsa('[data-demo-panel]');
   demoNav.forEach(btn => btn.addEventListener('click', () => {
-    demoNav.forEach(b => b.classList.remove('active')); demoPanels.forEach(p => p.classList.remove('active'));
-    btn.classList.add('active'); qs(`[data-demo-panel="${btn.dataset.demoTab}"]`)?.classList.add('active');
+    demoNav.forEach(b => b.classList.remove('active'));
+    demoPanels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    qs(`[data-demo-panel="${btn.dataset.demoTab}"]`)?.classList.add('active');
   }));
 
   const bars = qs('#attendanceBars');
   const days = ['M','T','W','T','F','S','S','M','T','W','T','F'];
-  const renderBars = () => {
+  function renderBars() {
     if (!bars) return;
     bars.innerHTML = '';
-    const vals = [72,84,78,91,87,43,30,89,93,85,95,90].map(v => Math.max(22, Math.min(98, v + Math.round(Math.random()*8-4))));
-    vals.forEach((v,i) => { const bar = document.createElement('i'); bar.style.height = `${v}%`; bar.dataset.day = days[i]; bars.appendChild(bar); });
-  };
-  renderBars(); setInterval(renderBars, 5500);
+    const vals = [72,84,78,91,87,43,30,89,93,85,95,90].map(v => Math.max(22, Math.min(98, v + Math.round(Math.random() * 8 - 4))));
+    vals.forEach((v, i) => {
+      const bar = document.createElement('i');
+      bar.style.height = `${v}%`;
+      bar.dataset.day = days[i];
+      bars.appendChild(bar);
+    });
+  }
+  renderBars();
+  setInterval(renderBars, 5500);
 
   const activity = [
     'Supervisor approved an attendance correction.',
@@ -92,34 +151,55 @@
     'Final attendance recap was exported to XLSX.'
   ];
   let activityIndex = 0;
-  setInterval(() => { const el = qs('#activityFeed'); if (!el) return; activityIndex = (activityIndex + 1) % activity.length; el.animate([{opacity:.2,transform:'translateY(4px)'},{opacity:1,transform:'none'}],{duration:350}); el.textContent = activity[activityIndex]; }, 4200);
+  setInterval(() => {
+    const el = qs('#activityFeed');
+    if (!el) return;
+    activityIndex = (activityIndex + 1) % activity.length;
+    if (!reduceMotion) el.animate([{opacity:.25, transform:'translateY(3px)'},{opacity:1, transform:'none'}], {duration:300});
+    el.textContent = activity[activityIndex];
+  }, 4200);
 
-  const clock = qs('#demoClock'), date = qs('#demoDate'), sync = qs('#demoSync'); let syncAge = 0;
-  const tickClock = () => {
+  const clock = qs('#demoClock');
+  const date = qs('#demoDate');
+  const sync = qs('#demoSync');
+  let syncAge = 0;
+  function tickClock() {
     const now = new Date();
-    if (clock) clock.textContent = now.toLocaleTimeString('id-ID',{hour12:false});
-    if (date) date.textContent = now.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'short',year:'numeric'});
+    if (clock) clock.textContent = now.toLocaleTimeString('id-ID', {hour12:false});
+    if (date) date.textContent = now.toLocaleDateString('id-ID', {weekday:'short', day:'2-digit', month:'short', year:'numeric'});
     if (sync) sync.textContent = syncAge < 2 ? 'synced now' : `synced ${syncAge}s ago`;
     syncAge = (syncAge + 1) % 8;
-  };
-  tickClock(); setInterval(tickClock, 1000);
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
 
-  // Subtle stat changes make the demo feel alive while clearly remaining demo data.
   setInterval(() => {
-    const ids = [['attendancePresent',24,29],['attendancePending',2,5],['attendanceLeave',2,4],['attendancePhl',1,3]];
-    ids.forEach(([id,min,max]) => { const el = qs(`#${id}`); if (el) el.textContent = String(Math.floor(Math.random()*(max-min+1))+min); });
+    [['attendancePresent',24,29],['attendancePending',2,5],['attendanceLeave',2,4],['attendancePhl',1,3]].forEach(([id,min,max]) => {
+      const el = qs(`#${id}`);
+      if (el) el.textContent = String(Math.floor(Math.random() * (max - min + 1)) + min);
+    });
   }, 7000);
 
   // Credential lightbox.
-  const lightbox = qs('#lightbox'), lightboxImage = qs('#lightboxImage'), lightboxTitle = qs('#lightboxTitle'), lightboxClose = qs('#lightboxClose');
-  const closeLightbox = () => { lightbox?.classList.remove('open'); lightbox?.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; };
+  const lightboxImage = qs('#lightboxImage');
+  const lightboxTitle = qs('#lightboxTitle');
+  const lightboxClose = qs('#lightboxClose');
+  const closeLightbox = () => {
+    lightbox?.classList.remove('open');
+    lightbox?.setAttribute('aria-hidden', 'true');
+  };
   qsa('[data-lightbox]').forEach(card => card.addEventListener('click', e => {
     if (e.target.closest('a')) return;
     if (!lightbox || !lightboxImage) return;
-    lightboxImage.src = card.dataset.lightbox; lightboxTitle.textContent = card.dataset.lightboxTitle || 'Document preview';
-    lightbox.classList.add('open'); lightbox.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden';
+    lightboxImage.src = card.dataset.lightbox;
+    lightboxTitle.textContent = card.dataset.lightboxTitle || 'Document preview';
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
   }));
   lightboxClose?.addEventListener('click', closeLightbox);
   lightbox?.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && lightbox?.classList.contains('open')) closeLightbox(); });
+
+  const hashIndex = byId(location.hash.replace('#',''));
+  setActive(hashIndex >= 0 ? hashIndex : 0, false);
 })();
