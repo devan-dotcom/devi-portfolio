@@ -17,25 +17,28 @@
   <div class="page-glow glow-one" aria-hidden="true"></div>
   <div class="page-glow glow-two" aria-hidden="true"></div>
 
-  <aside class="rail" id="rail">
-    <a class="rail-brand rail-brand-floating" href="#home" data-go="home" aria-label="Home" title="Devi Andriyan Subakti">
+  <aside class="rail rail-floating" id="rail">
+    <button class="rail-brand rail-brand-floating rail-menu-toggle" id="railToggle" type="button" aria-label="Buka navigasi portfolio" aria-controls="railPanel" aria-expanded="false" title="Devi Andriyan Subakti">
       <span class="rail-logo">DA</span>
-    </a>
+    </button>
 
-    <nav class="rail-nav" aria-label="Navigasi portfolio">
-      <a href="#home" data-go="home" class="active"><span>01</span><i></i><strong>Home</strong></a>
-      <a href="#profile" data-go="profile"><span>02</span><i></i><strong>Profile</strong></a>
-      <a href="#experience" data-go="experience"><span>03</span><i></i><strong>Experience</strong></a>
-      <a href="#harmony" data-go="harmony"><span>04</span><i></i><strong>Projects</strong></a>
-      <a href="#education" data-go="education"><span>06</span><i></i><strong>Credentials</strong></a>
-      <a href="#skills" data-go="skills"><span>08</span><i></i><strong>Skills</strong></a>
-      <a href="#contact" data-go="contact"><span>09</span><i></i><strong>Contact</strong></a>
-    </nav>
+    <div class="rail-panel" id="railPanel">
+      <nav class="rail-nav" aria-label="Navigasi portfolio">
+        <a href="#home" data-go="home" class="active"><span>01</span><i></i><strong>Home</strong></a>
+        <a href="#profile" data-go="profile"><span>02</span><i></i><strong>Profile</strong></a>
+        <a href="#experience" data-go="experience"><span>03</span><i></i><strong>Experience</strong></a>
+        <a href="#harmony" data-go="harmony"><span>04</span><i></i><strong>Projects</strong></a>
+        <a href="#education" data-go="education"><span>06</span><i></i><strong>Credentials</strong></a>
+        <a href="#skills" data-go="skills"><span>08</span><i></i><strong>Skills</strong></a>
+        <a href="#contact" data-go="contact"><span>09</span><i></i><strong>Contact</strong></a>
+      </nav>
 
-    <div class="rail-bottom">
-      <a class="rail-cv" href="assets/docs/devi-andriyan-subakti-cv.docx" download><span>CV</span><strong>Download CV</strong></a>
-      <div class="rail-counter"><b id="slideCurrent">01</b><span>/</span><small id="slideTotal">09</small></div>
+      <div class="rail-bottom">
+        <a class="rail-cv" href="assets/docs/devi-andriyan-subakti-cv.docx" download><span>CV</span><strong>Download CV</strong></a>
+      </div>
     </div>
+
+    <div class="rail-counter rail-counter-floating"><b id="slideCurrent">01</b><span>/</span><small id="slideTotal">09</small></div>
   </aside>
 
   <main class="stage" id="stage" aria-live="polite">

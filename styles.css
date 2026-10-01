@@ -103,3 +103,22 @@ body{position:relative}
 @media(max-height:860px) and (min-width:701px){.slide{padding-top:22px;padding-bottom:72px}.compact-page{gap:14px;padding-top:2px}.page-head h2,.contact-main h2{font-size:clamp(30px,3.4vw,50px)}.page-head>p{font-size:11px;max-width:320px}.home-copy h1{font-size:clamp(48px,5.3vw,78px);margin:18px 0}.home-lead{font-size:16px}.home-note{font-size:12px}.portrait-wrap{height:min(72vh,670px)}.experience-card{min-height:300px;padding:18px 20px}.experience-card li{font-size:10px;line-height:1.45}.project-summary h2{font-size:clamp(40px,4.2vw,60px)}.project-summary h3{font-size:12px}.project-summary>p{font-size:10px}.live-demo{min-height:500px}.demo-app{height:458px}.education-strip>div{padding:12px 14px}.document-card{min-height:250px}.doc-preview img{max-height:210px}.certificate-grid{gap:10px}.cert-img{height:126px}.skill-card{min-height:138px}}
 @media(max-height:720px) and (min-width:701px){.slide{padding-top:24px;padding-bottom:72px}.compact-page{gap:14px}.page-head h2,.contact-main h2{font-size:42px}.home-copy h1{font-size:62px}.portrait-wrap{height:76vh}.experience-card{min-height:320px}.project-card{min-height:165px}.live-demo{min-height:500px}.demo-app{height:456px}.cert-img{height:125px}.document-card{min-height:250px}.doc-preview img{max-height:220px}.skill-card{min-height:140px}}
 @media(prefers-reduced-motion:reduce){.slides{transition:none}.reveal{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}.swipe-hint i{animation:none}}
+
+
+/* V4.4 floating logo navigation */
+.rail.rail-floating{position:fixed;left:24px;top:24px;bottom:auto;width:auto;padding:0;background:transparent;border:0;border-radius:0;box-shadow:none;display:block;z-index:70}
+.rail-menu-toggle{appearance:none;-webkit-appearance:none;border:0;cursor:pointer;padding:0;display:grid;place-items:center;width:78px;height:78px;border-radius:26px;background:rgba(255,255,255,.94);backdrop-filter:blur(20px);border:1px solid rgba(210,223,238,.96);box-shadow:0 18px 44px rgba(31,66,114,.12)}
+.rail-menu-toggle:hover{transform:translateY(-2px)}
+.rail-menu-toggle:after{content:"";position:absolute;inset:-6px;border-radius:30px;pointer-events:none}
+.rail-panel{position:absolute;left:0;top:92px;width:220px;padding:14px;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border:1px solid rgba(210,223,238,.96);border-radius:26px;box-shadow:0 24px 55px rgba(31,66,114,.12);opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none;transition:.25s var(--ease)}
+.rail.open .rail-panel{opacity:1;transform:none;pointer-events:auto}
+.rail.open .rail-menu-toggle .rail-logo{box-shadow:0 10px 22px rgba(47,109,246,.26)}
+.rail-panel .rail-nav{margin:0;display:grid;gap:6px}
+.rail-panel .rail-bottom{margin-top:12px}
+.rail-panel .rail-cv{height:44px}
+.rail-counter-floating{position:fixed;left:24px;bottom:24px;background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border:1px solid rgba(210,223,238,.96);border-radius:18px;padding:12px 14px;box-shadow:0 12px 28px rgba(31,66,114,.10)}
+.stage{inset:0}
+.slide{padding:clamp(28px,4vw,58px) clamp(30px,5vw,76px) 88px clamp(112px,7vw,132px)}
+@media(max-width:1180px){.rail.rail-floating{left:18px;top:18px}.rail-menu-toggle{width:72px;height:72px;border-radius:24px}.rail-panel{top:84px;width:208px}.rail-counter-floating{left:18px;bottom:18px}.stage{inset:0}.slide{padding-left:90px;padding-right:34px}}
+@media(max-width:900px){.rail.rail-floating{left:14px;top:14px}.rail-menu-toggle{width:66px;height:66px;border-radius:22px}.rail-panel{top:78px;width:192px;padding:12px}.rail-panel .rail-nav a{height:38px}.rail-counter-floating{left:14px;bottom:14px;padding:10px 12px}.slide{padding-left:86px;padding-right:24px}}
+@media(max-width:700px){.rail.rail-floating{left:10px;top:10px}.rail-menu-toggle{width:58px;height:58px;border-radius:18px}.rail-logo{width:34px;height:34px;font-size:11px}.rail-panel{top:68px;width:172px;padding:10px;border-radius:20px}.rail-panel .rail-nav a{height:36px;grid-template-columns:22px 7px 1fr;padding:0 9px}.rail-panel .rail-nav a span{display:block}.rail-panel .rail-nav a strong{display:block;font-size:10px}.rail-panel .rail-cv{width:100%;height:40px;padding:0 10px;justify-content:flex-start}.rail-panel .rail-cv strong{display:block;font-size:10px}.rail-counter-floating{left:10px;bottom:10px;padding:8px 10px}.rail-counter-floating b{font-size:16px}.rail-counter-floating span,.rail-counter-floating small{font-size:9px}.slide{padding-left:20px}}

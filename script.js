@@ -6,6 +6,8 @@
   const track = qs('#slides');
   const slides = qsa('.slide');
   const railLinks = qsa('[data-go]');
+  const rail = qs('#rail');
+  const railToggle = qs('#railToggle');
   const prev = qs('#prevSlide');
   const next = qs('#nextSlide');
   const currentEl = qs('#slideCurrent');
@@ -23,6 +25,23 @@
 
   const byId = id => slides.findIndex(s => s.id === id);
   const format = n => String(n).padStart(2, '0');
+
+  function openRail(){
+    if (!rail || !railToggle) return;
+    rail.classList.add('open');
+    railToggle.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeRail(){
+    if (!rail || !railToggle) return;
+    rail.classList.remove('open');
+    railToggle.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggleRail(){
+    if (!rail) return;
+    rail.classList.contains('open') ? closeRail() : openRail();
+  }
 
   function setActive(index, updateHash = true) {
     const nextIndex = Math.max(0, Math.min(slides.length - 1, index));
@@ -70,7 +89,18 @@
       if (target < 0) return;
       e.preventDefault();
       setActive(target);
+      closeRail();
     });
+  });
+
+  railToggle?.addEventListener('click', e => {
+    e.preventDefault();
+    toggleRail();
+  });
+
+  document.addEventListener('click', e => {
+    if (!rail) return;
+    if (!rail.contains(e.target)) closeRail();
   });
   prev?.addEventListener('click', () => move(-1));
   next?.addEventListener('click', () => move(1));
@@ -110,6 +140,13 @@
   }, { passive: true });
 
   addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeRail();
+      if (lightbox?.classList.contains('open')) {
+        closeLightbox();
+      }
+      return;
+    }
     if (lightbox?.classList.contains('open')) return;
     if (['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)) { e.preventDefault(); move(1); }
     if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) { e.preventDefault(); move(-1); }
