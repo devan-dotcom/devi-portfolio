@@ -1,0 +1,4 @@
+Devi Portfolio — Full Replace V3
+Static HTML/CSS/JavaScript
+No npm / no build step
+Updated: 2026-10-01

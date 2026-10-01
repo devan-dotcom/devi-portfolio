@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Devi Andriyan Subakti — Portfolio V3
 
-## Getting Started
+Static portfolio website. Tidak menggunakan Next.js, React, npm, atau build step.
 
-First, run the development server:
+## Preview lokal
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Double-click `PREVIEW-WEBSITE.bat`. Website akan langsung terbuka di browser tanpa server lokal dan tanpa npm.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Opsional: bila ingin preview melalui local server dan Python tersedia, jalankan `py -m http.server 8080` lalu buka `http://localhost:8080`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Struktur
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `index.html` — seluruh konten website
+- `styles.css` — visual, layout, responsive, animation
+- `script.js` — interaction, live demo, animation, document lightbox
+- `assets/profile/` — portrait clean transparent
+- `assets/credentials/` — preview ijazah, transkrip, dan sertifikat
+- `assets/docs/` — CV dan bundle sertifikat PDF
+- `vercel.json` — konfigurasi Vercel static site
 
-## Learn More
+## Tentang project preview
 
-To learn more about Next.js, take a look at the following resources:
+Dashboard HARMONY dan project preview menggunakan data simulasi untuk demonstrasi UI. Tidak ada data karyawan asli yang dimasukkan ke website.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Academic document privacy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Nomor identitas, beberapa nomor dokumen, tanggal lahir, dan QR pada preview ijazah/transkrip disamarkan untuk versi publik. Informasi utama pendidikan tetap dapat dilihat.
 
-## Deploy on Vercel
+## Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Gunakan Vercel project lama agar domain tetap sama.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Framework Preset: `Other`
+Build Command: kosong
+Install Command: kosong
+Output Directory: kosong/default
+Root Directory: `./`
